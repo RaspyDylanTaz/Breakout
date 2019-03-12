@@ -6,7 +6,7 @@ public class Main extends JFrame{
 	
 	public Main() {
 		
-	    int width = 1000, height = 1000;
+	    int width = 1000, height = 500;
 	    //TO DO: make a panel in TITLE MODE
 	    ///////////////////////////////////
 	    //panel in GAME MODE.

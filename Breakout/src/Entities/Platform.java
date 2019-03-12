@@ -9,8 +9,12 @@ public class Platform {
 	private double y;
 	private int width = 150;
 	private int height = 10;
+	private int screenWidth;
+	private int screenHeight;
 	
 	public Platform(int width, int height) {
+		this.screenHeight = height;
+		this.screenWidth = width;
 		this.x=width/2-this.width/2;
 		this.y=height-100;
 	}
@@ -36,6 +40,11 @@ public class Platform {
 	}
 	public void draw(Graphics g) {
 		g.fillRect((int)this.x-width/2, (int)this.y-height/2, (int)width, (int)height);
+	}
+	
+	public void lifeReset() {
+		this.x=width/2-this.screenWidth/2;
+		this.y=this.screenHeight-100;
 	}
 	
 }
