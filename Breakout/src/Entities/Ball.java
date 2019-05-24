@@ -20,7 +20,7 @@ public class Ball {
 		this.screenHeight = height;
 		this.screenWidth = width;
 		this.x = screenWidth/2-this.width/2;
-		this.y = screenHeight-this.height;
+		this.y = screenHeight-100-this.height;
 	}
 
 	public void update(Platform plat, ArrayList<Block> blocks) {
@@ -58,9 +58,10 @@ public class Ball {
 	
 	public void lifeReset() {
 		this.x = screenWidth/2-this.width/2;
-		this.y = screenHeight - this.height;
+		this.y = screenHeight -100- this.height;
 		this.yVelocity = -1;
-		this.xVelocity = 0;
+		
+		this.xVelocity = 1;
 	}
 	
 	private void checkPlatformCollision(Platform plat){
@@ -118,6 +119,16 @@ public class Ball {
 				i-=1;
 			}
 		}
+	}
+	
+	public boolean outOfBounds() {
+
+		if(this.y >= this.screenHeight-this.height) {
+			//as soon as the bottom of the ball hits the bottom bound reset
+			return true;
+		}
+
+		return false;
 	}
 	
 	public void draw(Graphics g) {
