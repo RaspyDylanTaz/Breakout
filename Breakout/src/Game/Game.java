@@ -9,6 +9,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,20 +33,28 @@ public class Game extends JPanel implements MouseMotionListener {
 	private int height;
 	private Main main;
 	private int lives = 3;
+	
+	private int numOfBlocks = 84;
 
 	Timer t;
-
+	private double timeTaken=0, start = System.currentTimeMillis();
+	
+	
+	
 	public Game(int width, int height, Main m) {
 		this.main = m;
 		this.repaint();
+		addMouseMotionListener(this);
+		// set up all entities for the game to begin
 		this.height = height;
 		this.width = width;
 		plat = new Platform(width, height);
-		ball = new Ball(width, height);
+		ball = new Ball(width, height, this);
 
+		
 		createBlocks();
-		addMouseMotionListener(this);
 
+		//creates a new timer loop to start the game
 		this.t = new Timer();
 		t.schedule(new TimerTask() {
 			@Override
@@ -55,48 +64,60 @@ public class Game extends JPanel implements MouseMotionListener {
 		}, 0, 5);
 	}
 
+	/**
+	 * Main running loop of the game, this will update all parts of the game and then redraw the game.
+	 */
 	public void update() {
 		// update the position of the platform on the game screen
-		this.plat.setX(mouseX);
+		this.plat.setX(this.mouseX);
 		this.ball.update(this.plat, this.blocks);
-		this.outOfBounds();// check if the ball has gone out of bounds, if so a life is lost
-
+		this.ball.outOfBounds();// check if the ball has gone out of bounds, if so a life is lost
+		System.out.println(this.mouseX);
 		this.repaint();
 
 	}
 
-	public void outOfBounds() {
-		if (this.ball.outOfBounds()) {
-			this.lives--;
-			UIManager UI = new UIManager();
-			UI.put("OptionPane.background", Color.BLACK);
-			UI.put("Panel.background", Color.BLACK);
-			if (lives == 0) {
-				t.cancel(); // if there is no more lifes left the game ends
-				JFrame f = new JFrame();
-				JOptionPane.showMessageDialog(f, "Oh no... you're out of lives. Maybe next time", "Alert",
-						JOptionPane.WARNING_MESSAGE);
-			} else {
-				this.ball.lifeReset();
-				JFrame f = new JFrame();
-				JOptionPane.showMessageDialog(f, "Out of bounds! you only have " + this.lives + " lives left!", "Alert",
-						JOptionPane.WARNING_MESSAGE);
-			}
-
+	
+	/**
+	 * 
+	 * @return number of lives remaining
+	 */
+	public int getLives() {
+		return this.lives;
+	}
+	
+	/**
+	 * 
+	 */
+	public void cancelTimer() {
+		this.t.cancel(); 
+	}
+	
+	public void loseALife() {
+		this.lives--;
+	}
+	
+	
+	/**
+	 * creates a score based on time taken to complete the level, number of lives used, and number of blocks destroyed.
+	 * @return a double of the players game score
+	 */
+	public double calcScore() {
+		double multiplyer = 1.0;
+		if(this.lives == 2) {
+			multiplyer = 1.2;
+		}else if (this.lives == 3) {
+			multiplyer = 1.3;
 		}
+		this.timeTaken += (	System.currentTimeMillis()-this.start);
+		double score = ((this.numOfBlocks - this.blocks.size()) * this.timeTaken * multiplyer)/1000;
+		return score;
 	}
 
-	@Override
-	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		this.mouseX = arg0.getX();
-	}
-
+	
+	/**
+	 * calls all of the paint methods for objects on the screen
+	 */
 	public void paint(Graphics g) {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, width, height);
@@ -107,8 +128,15 @@ public class Game extends JPanel implements MouseMotionListener {
 		drawLives(g);
 	}
 	
+	
+	/**
+	 * handles the pausing of the game, display JOptionPane with pause options
+	 */
 	public void pause() {
 		JFrame f = new JFrame();
+		
+		this.timeTaken += (System.currentTimeMillis()-this.start);
+		
 		this.t.cancel();
 		int choice = JOptionPane.showOptionDialog(null, 
 		        "The Game is paused", 
@@ -121,9 +149,11 @@ public class Game extends JPanel implements MouseMotionListener {
 		
 		if(choice == 0) {
 			this.t = new Timer();
+			this.start = System.currentTimeMillis();
 			t.schedule(new TimerTask() {
 				@Override
 				public void run() {
+					
 					update();
 				}
 			}, 0, 5);
@@ -131,7 +161,16 @@ public class Game extends JPanel implements MouseMotionListener {
 			this.main.openMenu();
 		}
 	}
+	
 
+
+	
+	/**
+	 * ---------------------------------------------------------------
+	 * drawing methods below
+	 */
+	
+	
 	public void drawBlocks(Graphics g) {
 		for (Block b : this.blocks) {
 			b.draw(g);
@@ -152,4 +191,18 @@ public class Game extends JPanel implements MouseMotionListener {
 		g.setColor(Color.RED);
 		g.drawString("LIVES : "+this.lives, 10, this.height-50);
 	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		this.mouseX = e.getX();
+	}
+
+
 }

@@ -1,8 +1,15 @@
 package Entities;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
+import Game.Game;
 
 public class Ball {
 
@@ -16,7 +23,11 @@ public class Ball {
 	private int xVelocity = 1;
 	private int yVelocity = -1;
 
-	public Ball(int width, int height) {
+	
+	private Game game;
+	
+	public Ball(int width, int height, Game g) {
+		this.game = g;
 		this.screenHeight = height;
 		this.screenWidth = width;
 		this.x = screenWidth/2-this.width/2;
@@ -121,14 +132,29 @@ public class Ball {
 		}
 	}
 	
-	public boolean outOfBounds() {
 
-		if(this.y >= this.screenHeight-this.height) {
-			//as soon as the bottom of the ball hits the bottom bound reset
-			return true;
+	
+	public void outOfBounds() {
+		if (this.y >= this.screenHeight-this.height) {
+			this.game.loseALife();
+			UIManager UI = new UIManager();
+			UI.put("OptionPane.background", Color.BLACK);
+			UI.put("Panel.background", Color.BLACK);
+			if (this.game.getLives() == 0) {
+				this.game.cancelTimer(); // if there is no more lifes left the game ends.
+				
+				double score = this.game.calcScore();
+				JFrame f = new JFrame();
+				JOptionPane.showInputDialog(f, "Oh no... you're out of lives. Maybe next time.  You managed to score a total of "+score+ " Please enter your name for the hiscores", "Alert",
+						JOptionPane.WARNING_MESSAGE);
+			} else {
+				lifeReset();
+				JFrame f = new JFrame();
+				JOptionPane.showMessageDialog(f, "Out of bounds! you only have " + this.game.getLives() + " lives left!", "Alert",
+						JOptionPane.WARNING_MESSAGE);
+			}
+
 		}
-
-		return false;
 	}
 	
 	public void draw(Graphics g) {

@@ -2,8 +2,12 @@ package Entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public class Platform {
+
+public class Platform implements MouseMotionListener{
 
 	private double x;
 	private double y;
@@ -17,6 +21,7 @@ public class Platform {
 		this.screenWidth = width;
 		this.x=width/2-this.width/2;
 		this.y=height-100;
+
 	}
 
 	public double getX() {
@@ -46,5 +51,19 @@ public class Platform {
 		this.x=width/2-this.screenWidth/2;
 		this.y=this.screenHeight-100;
 	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 	
 }
