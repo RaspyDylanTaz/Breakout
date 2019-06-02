@@ -2,17 +2,23 @@ package Game;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import Util.Hiscores;
+
 public class Main {
 	private JFrame f;
 	private Menu m;
 	private Game g;
-	public Main() {
-		
+	
+	private Hiscores hs;
+	
+	public Main() throws FileNotFoundException {
+		hs = new Hiscores(); 
 		f = new JFrame();
 		int width = 1000, height = 500;
 		// TO DO: make a panel in TITLE MODE
@@ -32,7 +38,6 @@ public class Main {
 		 * main game so that from the menu different game states can be selected.
 		 */
 		this.m = new Menu(this);
-
 		f.add(m);
 	}
 
@@ -45,7 +50,7 @@ public class Main {
 		f.setTitle("Breakout");
 		f.setResizable(false);
 		f.setVisible(true);
-		f.add(new Hiscores(width, height));
+		f.add(new HiscoresWindow(this, width, height, this.hs));
 	}
 
 	/**
@@ -91,7 +96,12 @@ public class Main {
 
 	}
 
-	public static void main(String[] args) {
-		Main m = new Main();
+	public static void main(String[] args) throws FileNotFoundException {
+		try {
+			Main m = new Main();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
