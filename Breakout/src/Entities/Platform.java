@@ -6,7 +6,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-
+/**
+ *    
+ *    Platform (paddle) stores basic information about platform location and dimensions.
+ *    
+ * @author DaddyDyls
+ *
+ */
 public class Platform implements MouseMotionListener{
 
 	private double x;
@@ -43,10 +49,18 @@ public class Platform implements MouseMotionListener{
 	public int getWidth() {
 		return this.width;
 	}
+	
+	public int getHeight() {
+		return this.height;
+	}
 	public void draw(Graphics g) {
 		g.fillRect((int)this.x-width/2, (int)this.y-height/2, (int)width, (int)height);
 	}
 	
+	
+	/**
+	 * resets the position of the platform when the user dies
+	 */
 	public void lifeReset() {
 		this.x=width/2-this.screenWidth/2;
 		this.y=this.screenHeight-100;

@@ -12,7 +12,13 @@ public class Block {
 	
 	int width = 76;
 	int height = 24;
-	
+	/**
+	 * Block: used to represent a block in the game, stores position and color
+	 * @param xPosition
+	 * @param yPosition
+	 * @param color
+	 * @param health
+	 */
 	public Block(int xPosition, int yPosition, Color color, int health) {
 		this.HP = health;
 		this.col = color;

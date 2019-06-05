@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
@@ -59,22 +60,45 @@ public class Game extends JPanel implements MouseMotionListener {
 		t.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				update();
+				try {
+					update();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}, 0, 5);
 	}
 
 	/**
 	 * Main running loop of the game, this will update all parts of the game and then redraw the game.
+	 * @throws IOException 
 	 */
-	public void update() {
+	public void update() throws IOException {
 		// update the position of the platform on the game screen
 		this.plat.setX(this.mouseX);
 		this.ball.update(this.plat, this.blocks);
 		this.ball.outOfBounds();// check if the ball has gone out of bounds, if so a life is lost
-		System.out.println(this.mouseX);
+		this.checkIsWon();
 		this.repaint();
 
+	}
+	
+	public void checkIsWon() throws IOException {
+		if(this.blocks.size() == 0) {
+			cancelTimer(); // if there is no more lifes left the game ends.
+			
+			double score = calcScore();
+			JFrame f = new JFrame();
+			String s = JOptionPane.showInputDialog(f, "<HTML><font color=White> Wow someone actually beat the game.\n  You managed to score a total of "+score+ "\nPlease enter your name for the hiscores </font>", "Alert",
+					JOptionPane.WARNING_MESSAGE);
+			submitScore(s,score);
+			goToMenu();
+		}
+	}
+	
+	public void goToMenu() {
+		this.main.openMenu();
 	}
 
 	
@@ -114,7 +138,9 @@ public class Game extends JPanel implements MouseMotionListener {
 		return score;
 	}
 
-	
+	public void submitScore(String name, double score) throws IOException {
+		this.main.getHs().submit(name, score);
+	}
 	/**
 	 * calls all of the paint methods for objects on the screen
 	 */
@@ -139,7 +165,7 @@ public class Game extends JPanel implements MouseMotionListener {
 		
 		this.t.cancel();
 		int choice = JOptionPane.showOptionDialog(null, 
-		        "The Game is paused", 
+		        "<HTML><font color=White> The Game is paused </font>", 
 		        "Feedback", 
 		        JOptionPane.OK_CANCEL_OPTION, 
 		        JOptionPane.INFORMATION_MESSAGE, 
@@ -154,7 +180,12 @@ public class Game extends JPanel implements MouseMotionListener {
 				@Override
 				public void run() {
 					
-					update();
+					try {
+						update();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}, 0, 5);
 		}else {
@@ -188,7 +219,7 @@ public class Game extends JPanel implements MouseMotionListener {
 	
 	public void drawLives(Graphics g) {
 		g.setFont(new Font("TimesRoman", Font.PLAIN, 30)); 
-		g.setColor(Color.RED);
+		g.setColor(Color.DARK_GRAY);
 		g.drawString("LIVES : "+this.lives, 10, this.height-50);
 	}
 
